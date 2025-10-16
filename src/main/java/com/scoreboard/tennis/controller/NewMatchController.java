@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @WebServlet("/new-match")
 public class NewMatchController extends HttpServlet {
@@ -24,7 +25,7 @@ public class NewMatchController extends HttpServlet {
         try {
             String player1 = req.getParameter("player1");
             String player2 = req.getParameter("player2");
-            String matchId = playerService.createNewMatch(player1, player2);
+            UUID matchId = playerService.createNewMatch(player1, player2);
             resp.sendRedirect(req.getContextPath() + "/match-score?uuid=" + matchId);
         } catch (Exception e){
             ExceptionHandler.handle(e, req, resp);
