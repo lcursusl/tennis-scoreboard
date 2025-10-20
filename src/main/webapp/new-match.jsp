@@ -22,7 +22,7 @@
     <div>
       <nav class="nav-links">
         <a class="nav-link" href="${pageContext.request.contextPath}/">Home</a>
-        <a class="nav-link" href="${pageContext.request.contextPath}/matches.jsp">Matches</a>
+        <a class="nav-link" href="${pageContext.request.contextPath}/matches">Matches</a>
       </nav>
     </div>
   </section>

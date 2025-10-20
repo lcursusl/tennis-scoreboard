@@ -1,5 +1,6 @@
 package com.scoreboard.tennis.util;
 
+import com.scoreboard.tennis.exception.InvalidIdException;
 import com.scoreboard.tennis.exception.InvalidPlayerException;
 import com.scoreboard.tennis.exception.SamePlayersException;
 
@@ -14,8 +15,14 @@ public class Validator {
             throw new InvalidPlayerException("Player name too long (max 48 characters)");
         }
 
-        if (player1.equalsIgnoreCase(player2.trim())) {
+        if (player1.equalsIgnoreCase(player2)) {
             throw new SamePlayersException("Players must have different names");
+        }
+    }
+
+    public static void validateUuid(String uuid) {
+        if (uuid == null || uuid.trim().isEmpty()) {
+            throw new InvalidIdException("Invalid id format");
         }
     }
 }

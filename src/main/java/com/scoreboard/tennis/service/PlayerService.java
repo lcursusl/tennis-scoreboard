@@ -10,18 +10,18 @@ import java.util.UUID;
 public class PlayerService {
     private final PlayerRepository playerRepository = new PlayerRepository();
 
-    public UUID createNewMatch(String player1, String player2) {
-        Validator.validatePlayers(player1, player2);
-        if (playerRepository.findByName(player1).isEmpty()) {
-            playerRepository.save(player1);
+    public UUID createNewMatch(String player1Name, String player2Name) {
+        Validator.validatePlayers(player1Name, player2Name);
+        if (playerRepository.findByName(player1Name).isEmpty()) {
+            playerRepository.save(player1Name);
         }
-        if (playerRepository.findByName(player2).isEmpty()) {
-            playerRepository.save(player2);
+        if (playerRepository.findByName(player2Name).isEmpty()) {
+            playerRepository.save(player2Name);
         }
 
         GameScore gameScore = new GameScore(
-                playerRepository.findId(player1), 0, 0, 0,
-                playerRepository.findId(player2), 0, 0, 0
+                playerRepository.findIdByName(player1Name), 0, 0, 0,
+                playerRepository.findIdByName(player2Name), 0, 0, 0
         );
 
         UUID matchId = UUID.randomUUID();

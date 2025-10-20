@@ -29,10 +29,18 @@
     </div>
   </section>
 </header>
+
 <main>
   <div class="container">
     <h1>Current match</h1>
     <div class="current-match-image"></div>
+
+    <c:if test="${not empty error}">
+      <div class="error-message" style="color: red; margin: 20px 0;">
+        Error: ${error}
+      </div>
+    </c:if>
+
     <section class="score">
       <table class="table">
         <thead class="result">
@@ -41,7 +49,6 @@
           <th class="table-text">Sets</th>
           <th class="table-text">Games</th>
           <th class="table-text">Points</th>
-          <th class="table-text">Action</th>
         </tr>
         </thead>
         <tbody>
@@ -52,10 +59,12 @@
           <td class="table-text">${match.player1Points}</td>
           <td class="table-text">
             <form method="post" action="${pageContext.request.contextPath}/match-score?uuid=${match.id}">
-              <button type="submit" name="winner" value="player1" class="score-btn">Score</button>
+              <input type="hidden" name="winnerId" value="${match.player1.id}">
+              <button type="submit" class="score-btn">Score</button>
             </form>
           </td>
         </tr>
+
         <tr class="player2">
           <td class="table-text">${match.player2.name}</td>
           <td class="table-text">${match.player2Sets}</td>
@@ -63,7 +72,8 @@
           <td class="table-text">${match.player2Points}</td>
           <td class="table-text">
             <form method="post" action="${pageContext.request.contextPath}/match-score?uuid=${match.id}">
-              <button type="submit" name="winner" value="player2" class="score-btn">Score</button>
+              <input type="hidden" name="winnerId" value="${match.player2.id}">
+              <button type="submit" class="score-btn">Score</button>
             </form>
           </td>
         </tr>
@@ -76,9 +86,12 @@
     </c:if>
   </div>
 </main>
+
 <footer>
   <div class="footer">
-    <p>&copy; Tennis Scoreboard, project from <a href="https://zhukovsd.github.io/java-backend-learning-course/">zhukovsd/java-backend-learning-course</a> roadmap.</p>
+    <p>&copy; Tennis Scoreboard, project from
+      <a href="https://zhukovsd.github.io/java-backend-learning-course/">zhukovsd/java-backend-learning-course</a> roadmap.
+    </p>
   </div>
 </footer>
 </body>
