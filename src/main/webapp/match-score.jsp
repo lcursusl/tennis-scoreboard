@@ -33,8 +33,6 @@
 <main>
   <div class="container">
     <h1>Current match</h1>
-    <div class="current-match-image"></div>
-
     <c:if test="${not empty error}">
       <div class="error-message" style="color: red; margin: 20px 0;">
         Error: ${error}

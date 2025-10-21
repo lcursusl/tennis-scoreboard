@@ -1,6 +1,8 @@
 package com.scoreboard.tennis.service;
 
 import com.scoreboard.tennis.dto.MatchDto;
+import com.scoreboard.tennis.dto.ScoreResult;
+import com.scoreboard.tennis.dto.SetsResult;
 
 public class MatchScoreCalculationService {
     public MatchDto updateMatchScore(MatchDto match, Long winnerId) {
@@ -12,156 +14,106 @@ public class MatchScoreCalculationService {
         String points2 = match.getPlayer2Points();
 
         if (match.getPlayer1().getId().equals(winnerId)) {
-            switch (points1) {
-                case "0" -> points1 = "15";
-                case "15" -> points1 = "30";
-                case "30" -> points1 = "40";
-                case "40" -> {
-                    switch (points2) {
-                        case "Advantage" -> points2 = "40";
-                        case "40" -> points1 = "Advantage";
-                        default -> {
-                            points1 = "0";
-                            points2 = "0";
-                            switch (games1) {
-                                case 5 -> {
-                                    if (games2 < 5) {
-                                        games1 = 0;
-                                        games2 = 0;
-                                        sets1++;
-                                    } else {
-                                        games1 = 6;
-                                    }
-                                }
-                                case 6 -> {
-                                    if (games2 < 6) {
-                                        games1 = 0;
-                                        games2 = 0;
-                                        sets1++;
-                                    } else {
-                                        games1 = 0;
-                                        games2 = 0;
-                                        sets1++;
-                                        //taiBreak
-                                    }
-                                }
-                                default -> games1++;
-                            }
-                        }
-                    }
-                }
-                case "Advantage" -> {
-                    points1 = "0";
-                    points2 = "0";
-                    switch (games1) {
-                        case 5 -> {
-                            if (games2 < 5) {
-                                games1 = 0;
-                                games2 = 0;
-                                sets1++;
-                            } else {
-                                games1 = 6;
-                            }
-                        }
-                        case 6 -> {
-                            if (games2 < 6) {
-                                games1 = 0;
-                                games2 = 0;
-                                sets1++;
-                            } else {
-                                games1 = 0;
-                                games2 = 0;
-                                sets1++;
-                                //taiBreak
-                            }
-                        }
-                        default -> games1++;
-                    }
-                }
-            }
-        } else {
-            switch (points2) {
-                case "0" -> points2 = "15";
-                case "15" -> points2 = "30";
-                case "30" -> points2 = "40";
-                case "40" -> {
-                    switch (points1) {
-                        case "Advantage" -> points1 = "40";
-                        case "40" -> points2 = "Advantage";
-                        default -> {
-                            points2 = "0";
-                            points1 = "0";
-                            switch (games2) {
-                                case 5 -> {
-                                    if (games1 < 5) {
-                                        games2 = 0;
-                                        games1 = 0;
-                                        sets2++;
-                                    } else {
-                                        games2 = 6;
-                                    }
-                                }
-                                case 6 -> {
-                                    if (games1 < 6) {
-                                        games2 = 0;
-                                        games1 = 0;
-                                        sets1++;
-                                    } else {
-                                        games2 = 0;
-                                        games1 = 0;
-                                        sets2++;
-                                        //taiBreak
-                                    }
-                                }
-                                default -> games2++;
-                            }
-                        }
-                    }
-                }
-                case "Advantage" -> {
-                    points2 = "0";
-                    points1 = "0";
-                    switch (games2) {
-                        case 5 -> {
-                            if (games1 < 5) {
-                                games2 = 0;
-                                games1 = 0;
-                                sets2++;
-                            } else {
-                                games2 = 6;
-                            }
-                        }
-                        case 6 -> {
-                            if (games1 < 6) {
-                                games2 = 0;
-                                games1 = 0;
-                                sets1++;
-                            } else {
-                                games2 = 0;
-                                games1 = 0;
-                                sets2++;
-                                //taiBreak
-                            }
-                        }
-                        default -> games2++;
-                    }
-                }
-            }
+            ScoreResult scoreResult = calculateScore(sets1, sets2, games1, games2, points1, points2);
+            return new MatchDto(
+                    match.getId(),
+                    match.getPlayer1(),
+                    scoreResult.winnerSets(),
+                    scoreResult.winnerGames(),
+                    scoreResult.winnerPoints(),
+                    match.getPlayer2(),
+                    scoreResult.loserSets(),
+                    scoreResult.loserGames(),
+                    scoreResult.loserPoints()
+            );
         }
+        ScoreResult scoreResult = calculateScore(sets2, sets1, games2, games1, points2, points1);
         return new MatchDto(
                 match.getId(),
                 match.getPlayer1(),
-                sets1,
-                games1,
-                points1,
+                scoreResult.loserSets(),
+                scoreResult.loserGames(),
+                scoreResult.loserPoints(),
                 match.getPlayer2(),
-                sets2,
-                games2,
-                points2
+                scoreResult.winnerSets(),
+                scoreResult.winnerGames(),
+                scoreResult.winnerPoints()
         );
     }
 
     public boolean matchIsOver(MatchDto match) {
         return match.getPlayer1Sets() == 2 || match.getPlayer2Sets() == 2;
+    }
+
+    private ScoreResult calculateScore(int winnerSets, int loserSets, int winnerGames, int loserGames, String winnerPoints, String loserPoints) {
+        if (winnerGames == 6 && loserGames == 6) {
+            return calculateTieBreak(winnerSets, loserSets, winnerGames, loserGames, winnerPoints, loserPoints);
+        }
+        switch (winnerPoints) {
+            case "0" -> winnerPoints = "15";
+            case "15" -> winnerPoints = "30";
+            case "30" -> winnerPoints = "40";
+            case "40" -> {
+                if (loserPoints.equals("Advantage")) {
+                    loserPoints = "40";
+                } else if (loserPoints.equals("40")) {
+                    winnerPoints = "Advantage";
+                } else {
+                    winnerPoints = "0";
+                    loserPoints = "0";
+                    SetsResult setsResult = updateSetsAndGames(winnerSets, winnerGames, loserGames);
+                    winnerSets = setsResult.winnerSets();
+                    winnerGames = setsResult.winnerGames();
+                    loserGames = setsResult.loserGames();
+                }
+            }
+            case "Advantage" -> {
+                winnerPoints = "0";
+                loserPoints = "0";
+                SetsResult setsResult = updateSetsAndGames(winnerSets, winnerGames, loserGames);
+                winnerSets = setsResult.winnerSets();
+                winnerGames = setsResult.winnerGames();
+                loserGames = setsResult.loserGames();
+            }
+        }
+        return new ScoreResult(winnerSets, loserSets, winnerGames, loserGames, winnerPoints, loserPoints);
+    }
+
+    private ScoreResult calculateTieBreak(int winnerSets, int loserSets, int winnerGames, int loserGames, String winnerPoints, String loserPoints) {
+        int winnerPointsInt = Integer.parseInt(winnerPoints);
+        int loserPointsInt = Integer.parseInt(loserPoints);
+
+        if (winnerPointsInt - loserPointsInt == 1 && winnerPointsInt > 5) {
+            winnerPoints = "0";
+            loserPoints = "0";
+            winnerGames = 0;
+            loserGames = 0;
+            winnerSets++;
+        } else {
+            winnerPointsInt++;
+            winnerPoints = String.valueOf(winnerPointsInt);
+        }
+        return new ScoreResult(winnerSets, loserSets, winnerGames, loserGames, winnerPoints, loserPoints);
+    }
+
+    private SetsResult updateSetsAndGames(int winnerSets, int winnerGames, int loserGames) {
+        switch (winnerGames) {
+            case 5 -> {
+                if (loserGames < 5) {
+                    winnerGames = 0;
+                    loserGames = 0;
+                    winnerSets++;
+                } else {
+                    winnerGames = 6;
+                }
+            }
+            case 6 -> {
+                winnerGames = 0;
+                loserGames = 0;
+                winnerSets++;
+            }
+            default -> winnerGames++;
+        }
+        return new SetsResult(winnerSets, winnerGames, loserGames);
     }
 }
