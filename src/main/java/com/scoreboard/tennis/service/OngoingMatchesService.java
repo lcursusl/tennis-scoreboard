@@ -2,19 +2,15 @@ package com.scoreboard.tennis.service;
 
 import com.scoreboard.tennis.dto.GameScore;
 import com.scoreboard.tennis.dto.MatchDto;
-import com.scoreboard.tennis.repository.MatchRepository;
 import com.scoreboard.tennis.repository.PlayerRepository;
 import com.scoreboard.tennis.util.CurrentMatchStorage;
-import com.scoreboard.tennis.util.Validator;
 
 import java.util.UUID;
 
-public class MatchService {
-    private final MatchRepository matchRepository = new MatchRepository();
+public class OngoingMatchesService {
     private final PlayerRepository playerRepository = new PlayerRepository();
 
-    public MatchDto getScore(String uuid) {
-        Validator.validateUuid(uuid);
+    public MatchDto getMatch(String uuid) {
         GameScore gameScore = CurrentMatchStorage.get(UUID.fromString(uuid));
         return new MatchDto(
                 uuid,
@@ -29,10 +25,17 @@ public class MatchService {
         );
     }
 
-    /*public UUID updateMatchScore(String uuid) {
-        Validator.validateUuid(uuid);
-        GameScore gameScore = CurrentMatchStorage.get(UUID.fromString(uuid));
-
-
-    }*/
+    public void saveMatch(String uuid, MatchDto match) {
+        GameScore gameScore = new GameScore(
+                match.getPlayer1().getId(),
+                match.getPlayer1Sets(),
+                match.getPlayer1Games(),
+                match.getPlayer1Points(),
+                match.getPlayer2().getId(),
+                match.getPlayer2Sets(),
+                match.getPlayer2Games(),
+                match.getPlayer2Points()
+        );
+        CurrentMatchStorage.save(UUID.fromString(uuid), gameScore);
+    }
 }

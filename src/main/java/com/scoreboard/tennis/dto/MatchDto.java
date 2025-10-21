@@ -13,9 +13,9 @@ public class MatchDto {
     private Player player1;
     private int player1Sets;
     private int player1Games;
-    private int player1Points;
+    private String player1Points;
     private Player player2;
     private int player2Sets;
     private int player2Games;
-    private int player2Points;
+    private String player2Points;
 }

@@ -20,9 +20,15 @@ public class Validator {
         }
     }
 
+    public static void validatePlayerId(Long id) {
+        if (id == null || id == 0L) {
+            throw new InvalidIdException("Couldn't find a player");
+        }
+    }
+
     public static void validateUuid(String uuid) {
         if (uuid == null || uuid.trim().isEmpty()) {
-            throw new InvalidIdException("Invalid id format");
+            throw new InvalidIdException("Couldn't find a match");
         }
     }
 }

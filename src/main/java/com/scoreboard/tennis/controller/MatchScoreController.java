@@ -1,8 +1,11 @@
 package com.scoreboard.tennis.controller;
 
 import com.scoreboard.tennis.dto.MatchDto;
-import com.scoreboard.tennis.service.MatchService;
+import com.scoreboard.tennis.service.FinishedMatchesPersistenceService;
+import com.scoreboard.tennis.service.MatchScoreCalculationService;
+import com.scoreboard.tennis.service.OngoingMatchesService;
 import com.scoreboard.tennis.util.ExceptionHandler;
+import com.scoreboard.tennis.util.Validator;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -13,29 +16,51 @@ import java.io.IOException;
 
 @WebServlet("/match-score")
 public class MatchScoreController extends HttpServlet {
-    private MatchService matchService;
+    private OngoingMatchesService ongoingMatchesService;
+    private MatchScoreCalculationService matchScoreCalculationService;
+    private FinishedMatchesPersistenceService finishedMatchesPersistenceService;
 
     @Override
     public void init() {
-        matchService = new MatchService();
+        ongoingMatchesService = new OngoingMatchesService();
+        matchScoreCalculationService = new MatchScoreCalculationService();
+        finishedMatchesPersistenceService = new FinishedMatchesPersistenceService();
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             String uuidParam = req.getParameter("uuid");
-            MatchDto matchDto = matchService.getScore(uuidParam);
-            req.setAttribute("match", matchDto);
+            Validator.validateUuid(uuidParam);
+
+            MatchDto match = ongoingMatchesService.getMatch(uuidParam);
+            req.setAttribute("match", match);
             req.getRequestDispatcher("/match-score.jsp").forward(req, resp);
         } catch (Exception e) {
             ExceptionHandler.handle(e, req, resp);
         }
     }
 
-    /*@Override
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String uuid = req.getParameter("uuid");
-        UUID matchId = matchService.updateMatchScore(uuid);
-        resp.sendRedirect(req.getContextPath() + "/match-score.jsp?uuid=" + matchId);
-    }*/
+        try {
+            String uuidParam = req.getParameter("uuid");
+            Long winnerId = Long.valueOf(req.getParameter("winnerId"));
+            Validator.validateUuid(uuidParam);
+            Validator.validatePlayerId(winnerId);
+
+            MatchDto match = ongoingMatchesService.getMatch(uuidParam);
+            MatchDto updatedMatch = matchScoreCalculationService.updateMatchScore(match, winnerId);
+
+            if (matchScoreCalculationService.matchIsOver(updatedMatch)) {
+                finishedMatchesPersistenceService.persist(updatedMatch, winnerId);
+            } else {
+                ongoingMatchesService.saveMatch(uuidParam, updatedMatch);
+            }
+            req.setAttribute("match", updatedMatch);
+            req.getRequestDispatcher("/match-score.jsp").forward(req, resp);
+        } catch (Exception e) {
+            ExceptionHandler.handle(e, req, resp);
+        }
+    }
 }

@@ -18,4 +18,8 @@ public class CurrentMatchStorage {
     public GameScore get(UUID uuid) {
         return currentMatches.get(uuid);
     }
+
+    public void delete(UUID uuid) {
+        currentMatches.remove(uuid);
+    }
 }
