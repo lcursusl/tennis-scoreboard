@@ -18,12 +18,12 @@ public class Match {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "playerOne", nullable = false)
-    private Player playerOne;
+    @JoinColumn(name = "player1", nullable = false)
+    private Player player1;
 
     @ManyToOne
-    @JoinColumn(name = "playerTwo", nullable = false)
-    private Player playerTwo;
+    @JoinColumn(name = "player2", nullable = false)
+    private Player player2;
 
     @ManyToOne
     @JoinColumn(name = "winner", nullable = false)

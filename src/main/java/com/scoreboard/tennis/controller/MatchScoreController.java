@@ -28,24 +28,24 @@ public class MatchScoreController extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            String uuidParam = req.getParameter("uuid");
+            String uuidParam = request.getParameter("uuid");
             Validator.validateUuid(uuidParam);
 
             MatchDto match = ongoingMatchesService.getMatch(uuidParam);
-            req.setAttribute("match", match);
-            req.getRequestDispatcher("/match-score.jsp").forward(req, resp);
+            request.setAttribute("match", match);
+            request.getRequestDispatcher("/match-score.jsp").forward(request, response);
         } catch (Exception e) {
-            ExceptionHandler.handle(e, req, resp);
+            ExceptionHandler.handle(e, request, response);
         }
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            String uuidParam = req.getParameter("uuid");
-            Long winnerId = Long.valueOf(req.getParameter("winnerId"));
+            String uuidParam = request.getParameter("uuid");
+            Long winnerId = Long.valueOf(request.getParameter("winnerId"));
             Validator.validateUuid(uuidParam);
             Validator.validatePlayerId(winnerId);
 
@@ -54,13 +54,14 @@ public class MatchScoreController extends HttpServlet {
 
             if (matchScoreCalculationService.matchIsOver(updatedMatch)) {
                 finishedMatchesPersistenceService.persist(updatedMatch, winnerId);
+                response.sendRedirect( request.getContextPath() + "/matches?page=1&filter_by_player_name=");
             } else {
                 ongoingMatchesService.saveMatch(uuidParam, updatedMatch);
+                request.setAttribute("match", updatedMatch);
+                request.getRequestDispatcher("/match-score.jsp").forward(request, response);
             }
-            req.setAttribute("match", updatedMatch);
-            req.getRequestDispatcher("/match-score.jsp").forward(req, resp);
         } catch (Exception e) {
-            ExceptionHandler.handle(e, req, resp);
+            ExceptionHandler.handle(e, request, response);
         }
     }
 }

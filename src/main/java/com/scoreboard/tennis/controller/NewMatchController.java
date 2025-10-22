@@ -22,16 +22,16 @@ public class NewMatchController extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            String player1Name = req.getParameter("player1");
-            String player2Name = req.getParameter("player2");
+            String player1Name = request.getParameter("player1");
+            String player2Name = request.getParameter("player2");
             Validator.validatePlayers(player1Name, player2Name);
 
             UUID matchId = playerService.createNewMatch(player1Name, player2Name);
-            resp.sendRedirect(req.getContextPath() + "/match-score?uuid=" + matchId);
+            response.sendRedirect(request.getContextPath() + "/match-score?uuid=" + matchId);
         } catch (Exception e) {
-            ExceptionHandler.handle(e, req, resp);
+            ExceptionHandler.handle(e, request, response);
         }
     }
 }

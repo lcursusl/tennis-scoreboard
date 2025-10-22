@@ -31,4 +31,15 @@ public class Validator {
             throw new InvalidIdException("Couldn't find a match");
         }
     }
+
+    public static int validatePage(String page) {
+        if (page == null) {
+            return 1;
+        }
+        int pageNumber = Integer.parseInt(page);
+        if (pageNumber < 1) {
+            pageNumber = 1;
+        }
+        return pageNumber;
+    }
 }

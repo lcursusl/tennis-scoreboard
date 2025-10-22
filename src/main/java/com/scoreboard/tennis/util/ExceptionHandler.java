@@ -22,8 +22,7 @@ public class ExceptionHandler {
             view = NEW_MATCH_JSP;
         } else if (e instanceof InvalidIdException) {
             view = MATCH_SCORE_JSP;
-        }
-        else {
+        } else {
             view = INDEX_JSP;
         }
 

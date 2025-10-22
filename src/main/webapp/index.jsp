@@ -22,7 +22,7 @@
         <div>
             <nav class="nav-links">
                 <a class="nav-link" href="${pageContext.request.contextPath}/">Home</a>
-                <a class="nav-link" href="${pageContext.request.contextPath}/matches.jsp">Matches</a>
+                <a class="nav-link" href="${pageContext.request.contextPath}/matches?page=1&filter_by_player_name=">Matches</a>
             </nav>
         </div>
     </section>
@@ -43,7 +43,7 @@
             <a class="homepage-action-button" href="${pageContext.request.contextPath}/new-match.jsp">
                 <button class="btn start-match">Start a new match</button>
             </a>
-            <a class="homepage-action-button" href="${pageContext.request.contextPath}/matches.jsp">
+            <a class="homepage-action-button" href="${pageContext.request.contextPath}/matches?page=1&filter_by_player_name=">
                 <button class="btn view-results">View match results</button>
             </a>
         </div>

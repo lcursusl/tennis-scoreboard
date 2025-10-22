@@ -24,7 +24,7 @@
         <div>
             <nav class="nav-links">
                 <a class="nav-link" href="${pageContext.request.contextPath}/">Home</a>
-                <a class="nav-link" href="${pageContext.request.contextPath}/matches">Matches</a>
+                <a class="nav-link" href="${pageContext.request.contextPath}/matches?page=1&filter_by_player_name=">Matches</a>
             </nav>
         </div>
     </section>
@@ -32,14 +32,13 @@
 <main>
     <div class="container">
         <h1>Matches</h1>
-        <c:if test="${not empty error}">
-            <div class="error-message" style="color: red; margin: 20px 0;">
-                Error: ${error}
-            </div>
-        </c:if>
+
         <form method="get" action="${pageContext.request.contextPath}/matches">
             <div class="input-container">
-                <input class="input-filter" name="filter_by_player_name" placeholder="Filter by name" type="text"
+                <input class="input-filter"
+                       name="filter_by_player_name"
+                       placeholder="Filter by name"
+                       type="text"
                        value="${param.filter_by_player_name}"/>
                 <div>
                     <button type="submit" class="btn-filter">Search</button>
@@ -50,50 +49,80 @@
             </div>
         </form>
 
+        <c:if test="${not empty error}">
+            <div class="error-message" style="color: red; margin: 20px 0;">
+                Error: ${error}
+            </div>
+        </c:if>
+
         <table class="table-matches">
             <tr>
                 <th>Player One</th>
                 <th>Player Two</th>
                 <th>Winner</th>
             </tr>
-            <c:forEach var="match" items="${matches}">
-                <tr>
-                    <td>${match.player1.name}</td>
-                    <td>${match.player2.name}</td>
-                    <td><span class="winner-name-td">${match.winner.name}</span></td>
-                </tr>
-            </c:forEach>
+            <c:choose>
+                <c:when test="${not empty matches}">
+                    <c:forEach var="match" items="${matches}">
+                        <tr>
+                            <td>${match.player1.name}</td>
+                            <td>${match.player2.name}</td>
+                            <td><span class="winner-name-td">${match.winner.name}</span></td>
+                        </tr>
+                    </c:forEach>
+                </c:when>
+                <c:otherwise>
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 40px;">
+                            No matches found
+                        </td>
+                    </tr>
+                </c:otherwise>
+            </c:choose>
         </table>
 
-        <div class="pagination">
-            <c:if test="${currentPage > 1}">
-                <a class="prev" href="?page=${currentPage - 1}&filter_by_player_name=${param.filter_by_player_name}">
-                    < </a>
-            </c:if>
+        <c:if test="${totalPages > 1}">
+            <div class="pagination">
+                    <%-- Previous page --%>
+                <c:if test="${currentPage > 1}">
+                    <a class="prev"
+                       href="?page=${currentPage - 1}<c:if test='${not empty param.filter_by_player_name}'>&filter_by_player_name=${param.filter_by_player_name}</c:if>">
+                        &lt;
+                    </a>
+                </c:if>
 
-            <c:forEach begin="1" end="${totalPages}" var="page">
-                <c:choose>
-                    <c:when test="${page == currentPage}">
-                        <span class="num-page current">${page}</span>
-                    </c:when>
-                    <c:otherwise>
-                        <a class="num-page"
-                           href="?page=${page}&filter_by_player_name=${param.filter_by_player_name}">${page}</a>
-                    </c:otherwise>
-                </c:choose>
-            </c:forEach>
+                    <%-- Page numbers --%>
+                <c:forEach begin="1" end="${totalPages}" var="pageNum">
+                    <c:choose>
+                        <c:when test="${pageNum == currentPage}">
+                            <span class="num-page current">${pageNum}</span>
+                        </c:when>
+                        <c:otherwise>
+                            <a class="num-page"
+                               href="?page=${pageNum}<c:if test='${not empty param.filter_by_player_name}'>&filter_by_player_name=${param.filter_by_player_name}</c:if>">
+                                    ${pageNum}
+                            </a>
+                        </c:otherwise>
+                    </c:choose>
+                </c:forEach>
 
-            <c:if test="${currentPage < totalPages}">
-                <a class="next" href="?page=${currentPage + 1}&filter_by_player_name=${param.filter_by_player_name}">
-                    > </a>
-            </c:if>
-        </div>
+                    <%-- Next page --%>
+                <c:if test="${currentPage < totalPages}">
+                    <a class="next"
+                       href="?page=${currentPage + 1}<c:if test='${not empty param.filter_by_player_name}'>&filter_by_player_name=${param.filter_by_player_name}</c:if>">
+                        &gt;
+                    </a>
+                </c:if>
+            </div>
+        </c:if>
     </div>
 </main>
 <footer>
     <div class="footer">
-        <p>&copy; Tennis Scoreboard, project from <a href="https://zhukovsd.github.io/java-backend-learning-course/">zhukovsd/java-backend-learning-course</a>
-            roadmap.</p>
+        <p>&copy; Tennis Scoreboard, project from
+            <a href="https://zhukovsd.github.io/java-backend-learning-course/">zhukovsd/java-backend-learning-course</a>
+            roadmap.
+        </p>
     </div>
 </footer>
 </body>
