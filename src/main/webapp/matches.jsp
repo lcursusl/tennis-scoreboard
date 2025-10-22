@@ -42,9 +42,6 @@
                        value="${param.filter_by_player_name}"/>
                 <div>
                     <button type="submit" class="btn-filter">Search</button>
-                    <a href="${pageContext.request.contextPath}/matches">
-                        <button type="button" class="btn-filter">Reset Filter</button>
-                    </a>
                 </div>
             </div>
         </form>

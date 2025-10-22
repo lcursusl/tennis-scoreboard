@@ -43,16 +43,18 @@ public class MatchRepository {
 
     public Long findTotalPages() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("select count(*) from Match", Long.class).uniqueResult();
+            Long countMatches = session.createQuery("select count(*) from Match", Long.class).uniqueResult();
+            return (countMatches + 5 - 1) / 5;
         }
     }
 
     public Long findTotalPages(String filterByPlayerName) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("select count(*) from Match m where m.player1.name like :player1 or m.player2.name like :player2", Long.class)
+            Long countMatches = session.createQuery("select count(*) from Match m where m.player1.name like :player1 or m.player2.name like :player2", Long.class)
                     .setParameter("player1", "%" + filterByPlayerName + "%")
                     .setParameter("player2", "%" + filterByPlayerName + "%")
                     .uniqueResult();
+            return (countMatches + 5 - 1) / 5;
         }
     }
 }
