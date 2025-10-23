@@ -80,6 +80,11 @@ public class MatchScoreCalculationService {
     }
 
     private ScoreResult calculateTieBreak(int winnerSets, int loserSets, int winnerGames, int loserGames, String winnerPoints, String loserPoints) {
+        if (winnerPoints.equals("100") && loserPoints.equals("100")) {
+            winnerPoints = "10";
+            loserPoints = "10";
+        }
+
         int winnerPointsInt = Integer.parseInt(winnerPoints);
         int loserPointsInt = Integer.parseInt(loserPoints);
 

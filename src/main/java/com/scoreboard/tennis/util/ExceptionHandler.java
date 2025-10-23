@@ -1,5 +1,6 @@
 package com.scoreboard.tennis.util;
 
+import com.scoreboard.tennis.exception.GayPlayerException;
 import com.scoreboard.tennis.exception.InvalidIdException;
 import com.scoreboard.tennis.exception.InvalidPlayerException;
 import com.scoreboard.tennis.exception.SamePlayersException;
@@ -18,7 +19,7 @@ public class ExceptionHandler {
     public static void handle(Exception e, HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String view;
 
-        if (e instanceof InvalidPlayerException || e instanceof SamePlayersException) {
+        if (e instanceof InvalidPlayerException || e instanceof SamePlayersException || e instanceof GayPlayerException) {
             view = NEW_MATCH_JSP;
         } else if (e instanceof InvalidIdException) {
             view = MATCH_SCORE_JSP;
