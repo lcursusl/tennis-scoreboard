@@ -88,7 +88,7 @@ public class MatchScoreCalculationService {
         int winnerPointsInt = Integer.parseInt(winnerPoints);
         int loserPointsInt = Integer.parseInt(loserPoints);
 
-        if (winnerPointsInt - loserPointsInt == 1 && winnerPointsInt > 5) {
+        if (winnerPointsInt - loserPointsInt > 0 && winnerPointsInt > 5) {
             winnerPoints = "0";
             loserPoints = "0";
             winnerGames = 0;
